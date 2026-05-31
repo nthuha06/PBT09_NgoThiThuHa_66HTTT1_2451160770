@@ -178,3 +178,97 @@ Khi đó:
 ```
 
 chỉ hiển thị như text bình thường và không thực thi JavaScript.
+
+---
+
+## Câu A3 — Event Bubbling
+
+### 1. Khi click vào button
+
+HTML:
+
+```html
+<div id="outer">
+    <div id="inner">
+        <button id="btn">Click me</button>
+    </div>
+</div>
+```
+
+JavaScript:
+
+```javascript
+document.querySelector("#outer").addEventListener("click", () => {
+    console.log("OUTER");
+});
+
+document.querySelector("#inner").addEventListener("click", () => {
+    console.log("INNER");
+});
+
+document.querySelector("#btn").addEventListener("click", (e) => {
+    console.log("BUTTON");
+});
+```
+
+---
+
+### 2. Output khi click button
+
+```text
+BUTTON
+INNER
+OUTER
+```
+
+---
+
+### 3. Giải thích
+
+Khi click vào button:
+
+1. Event xảy ra tại button trước
+2. Sau đó event bubbling nổi dần lên phần tử cha
+3. Event đi từ:
+   - button
+   - inner
+   - outer
+
+Đây gọi là Event Bubbling.
+
+---
+
+### 4. Nếu uncomment stopPropagation()
+
+```javascript
+document.querySelector("#btn").addEventListener("click", (e) => {
+    console.log("BUTTON");
+
+    e.stopPropagation();
+});
+```
+
+---
+
+### 5. Output mới
+
+```text
+BUTTON
+```
+
+---
+
+### 6. Giải thích
+
+`e.stopPropagation()` sẽ chặn event bubbling.
+
+Event chỉ chạy ở button và không truyền tiếp lên:
+
+- inner
+- outer
+
+nên console chỉ in ra:
+
+```text
+BUTTON
+```

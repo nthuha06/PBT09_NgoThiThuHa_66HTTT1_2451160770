@@ -272,3 +272,363 @@ nên console chỉ in ra:
 ```text
 BUTTON
 ```
+
+---
+
+# PHẦN C
+
+## Câu C1 — Debug DOM Code
+
+### 1. Các lỗi trong code
+
+---
+
+### ❌ Lỗi 1 — Sai event name
+
+Code sai:
+
+```javascript
+addEventListener("onclick", ...)
+```
+
+Phải sửa:
+
+```javascript
+addEventListener("click", ...)
+```
+
+Giải thích:
+
+`addEventListener()` chỉ nhận tên event:
+
+- click
+- input
+- submit
+
+KHÔNG dùng:
+
+```javascript
+"onclick"
+```
+
+---
+
+### ❌ Lỗi 2 — countDisplay là const nhưng bị gán lại
+
+Code sai:
+
+```javascript
+countDisplay = count;
+```
+
+Phải sửa:
+
+```javascript
+countDisplay.textContent = count;
+```
+
+Giải thích:
+
+`countDisplay` là DOM element nên phải cập nhật nội dung bằng:
+
+```javascript
+textContent
+```
+
+---
+
+### ❌ Lỗi 3 — historyList.innerHTML = null
+
+Code sai:
+
+```javascript
+historyList.innerHTML = null;
+```
+
+Phải sửa:
+
+```javascript
+historyList.innerHTML = "";
+```
+
+Giải thích:
+
+`innerHTML` phải nhận string.
+
+---
+
+### ❌ Lỗi 4 — item.remove thiếu ()
+
+Code sai:
+
+```javascript
+item.remove;
+```
+
+Phải sửa:
+
+```javascript
+item.remove();
+```
+
+Giải thích:
+
+`remove` là function nên cần gọi bằng `()`.
+
+---
+
+### ❌ Lỗi 5 — Không load history từ localStorage
+
+Code hiện tại chỉ load count:
+
+```javascript
+count = localStorage.getItem("count");
+```
+
+Cần thêm:
+
+```javascript
+historyList.innerHTML =
+    localStorage.getItem("history");
+```
+
+---
+
+### ❌ Lỗi 6 — localStorage trả về string
+
+Code:
+
+```javascript
+count = localStorage.getItem("count");
+```
+
+Phải sửa:
+
+```javascript
+count = Number(localStorage.getItem("count")) || 0;
+```
+
+Giải thích:
+
+localStorage luôn lưu string.
+
+---
+
+### ❌ Lỗi 7 — Có thể decrement xuống số âm
+
+Code hiện tại:
+
+```javascript
+count--;
+```
+
+Nên sửa:
+
+```javascript
+if(count > 0){
+    count--;
+}
+```
+
+Giải thích:
+
+Tránh counter âm.
+
+---
+
+### ❌ Lỗi 8 — innerHTML không cần thiết
+
+Code:
+
+```javascript
+countDisplay.innerHTML = count;
+```
+
+Nên sửa:
+
+```javascript
+countDisplay.textContent = count;
+```
+
+Giải thích:
+
+Chỉ hiển thị text nên dùng `textContent`
+an toàn và nhanh hơn.
+
+---
+
+### ❌ Lỗi 9 — Event listener bind riêng cho từng li
+
+Code:
+
+```javascript
+li.addEventListener("click", ...)
+```
+
+Không tối ưu.
+
+Nên dùng Event Delegation:
+
+```javascript
+historyList.addEventListener("click", ...)
+```
+
+Giải thích:
+
+Giảm số lượng event listeners khi có nhiều items.
+
+---
+
+### ❌ Lỗi 10 — beforeunload không phải lúc nào cũng đáng tin
+
+Code:
+
+```javascript
+window.addEventListener("beforeunload", ...)
+```
+
+Có thể không chạy trong một số trường hợp.
+
+Tốt hơn nên save ngay sau khi update count/history.
+
+---
+
+## 2. Code đã sửa hoàn chỉnh
+
+```javascript
+const countDisplay =
+    document.querySelector(".count");
+
+const historyList =
+    document.getElementById("history");
+
+let count =
+    Number(localStorage.getItem("count")) || 0;
+
+countDisplay.textContent = count;
+
+
+
+
+
+// LOAD HISTORY
+historyList.innerHTML =
+    localStorage.getItem("history") || "";
+
+
+
+
+
+// INCREMENT
+document.querySelector("#incrementBtn")
+    .addEventListener("click", () => {
+
+        count++;
+
+        countDisplay.textContent = count;
+
+
+
+
+
+        const li =
+            document.createElement("li");
+
+        li.textContent =
+            "Count changed to " + count;
+
+
+
+
+
+        historyList.append(li);
+
+        saveData();
+
+    });
+
+
+
+
+
+// DECREMENT
+document.querySelector("#decrementBtn")
+    .addEventListener("click", () => {
+
+        if(count > 0){
+
+            count--;
+
+            countDisplay.textContent = count;
+
+            saveData();
+
+        }
+
+    });
+
+
+
+
+
+// RESET
+document.querySelector("#resetBtn")
+    .addEventListener("click", () => {
+
+        count = 0;
+
+        countDisplay.textContent = count;
+
+        historyList.innerHTML = "";
+
+        saveData();
+
+    });
+
+
+
+
+
+// EVENT DELEGATION DELETE HISTORY
+historyList.addEventListener("click", (e) => {
+
+    if(e.target.tagName === "LI"){
+
+        e.target.remove();
+
+        saveData();
+
+    }
+
+});
+
+
+
+
+
+// CLEAR HISTORY
+document.querySelector("#clearHistory")
+    .addEventListener("click", () => {
+
+        historyList.innerHTML = "";
+
+        saveData();
+
+    });
+
+
+
+
+
+// SAVE LOCALSTORAGE
+function saveData(){
+
+    localStorage.setItem("count", count);
+
+    localStorage.setItem(
+        "history",
+        historyList.innerHTML
+    );
+
+}
+```

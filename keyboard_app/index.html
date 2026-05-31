@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard App</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Keyboard Accessibility App</h1>
+
+
+
+
+
+    <!-- Gallery -->
+    <div class="gallery">
+
+        <img
+            id="galleryImage"
+            src="https://placehold.co/600x300?text=Image+1"
+            alt="Gallery Image"
+        >
+
+    </div>
+
+
+
+
+
+    <!-- Info -->
+    <div class="instructions">
+
+        <p>⬅ ➡ : Change image</p>
+        <p>1-5 : Jump image</p>
+        <p>Space : Play/Pause slideshow</p>
+        <p>Ctrl + K : Open command palette</p>
+        <p>ESC : Close modal</p>
+
+    </div>
+
+
+
+
+
+    <!-- Open Modal -->
+    <button id="openModal">
+
+        Open Modal
+
+    </button>
+
+</div>
+
+
+
+
+
+<!-- Modal -->
+<div id="modal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <h2>Image Modal</h2>
+
+        <p>Press ESC to close</p>
+
+        <button id="closeModal">
+            Close
+        </button>
+
+    </div>
+
+</div>
+
+
+
+
+
+<!-- Command Palette -->
+<div id="commandPalette" class="palette hidden">
+
+    <input
+        type="text"
+        id="commandInput"
+        placeholder="Search command..."
+        aria-label="Command Search"
+    >
+
+    <ul id="commandList">
+
+        <li tabindex="0">Open Gallery</li>
+        <li tabindex="0">Toggle Dark Mode</li>
+        <li tabindex="0">Close Modal</li>
+
+    </ul>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

@@ -632,3 +632,150 @@ function saveData(){
 
 }
 ```
+
+---
+
+## Câu C2 — Performance
+
+### 1. Tại sao bind event lên 1000 elements riêng lẻ là BAD PRACTICE?
+
+Ví dụ code không tối ưu:
+
+```javascript
+const items = document.querySelectorAll(".item");
+
+items.forEach(item => {
+
+    item.addEventListener("click", () => {
+
+        console.log("Clicked");
+
+    });
+
+});
+```
+
+Nếu có 1000 elements:
+
+- Trình duyệt phải tạo 1000 event listeners
+- Tốn nhiều memory
+- Giảm performance
+- Khó maintain code
+- Khi thêm elements mới phải bind lại event
+
+---
+
+### 2. Event Delegation giải quyết thế nào?
+
+Thay vì bind event lên từng element,
+ta bind event lên phần tử cha.
+
+Ví dụ:
+
+```javascript
+document.querySelector("#list")
+    .addEventListener("click", (e) => {
+
+        if(e.target.classList.contains("item")){
+
+            console.log("Clicked");
+
+        }
+
+    });
+```
+
+---
+
+### 3. Lợi ích của Event Delegation
+
+- Chỉ cần 1 event listener
+- Tiết kiệm memory
+- Performance tốt hơn
+- Tự hoạt động với elements được thêm động
+- Code sạch và dễ maintain hơn
+
+---
+
+## 4. Refactor dùng DocumentFragment
+
+### Code chưa tối ưu
+
+```javascript
+for (let i = 0; i < 1000; i++) {
+
+    const div = document.createElement("div");
+
+    div.textContent = `Item ${i}`;
+
+    document.body.appendChild(div);
+
+}
+```
+
+---
+
+### Vấn đề
+
+Mỗi lần:
+
+```javascript
+appendChild()
+```
+
+trình duyệt phải:
+
+- cập nhật DOM
+- tính toán layout
+- repaint giao diện
+
+Điều này gây:
+
+```text
+1000 lần reflow/repaint
+```
+
+nên performance kém.
+
+---
+
+## 5. Code tối ưu với DocumentFragment
+
+```javascript
+const fragment = document.createDocumentFragment();
+
+for (let i = 0; i < 1000; i++) {
+
+    const div = document.createElement("div");
+
+    div.textContent = `Item ${i}`;
+
+    fragment.appendChild(div);
+
+}
+
+document.body.appendChild(fragment);
+```
+
+---
+
+## 6. Tại sao DocumentFragment nhanh hơn?
+
+`DocumentFragment` là vùng nhớ tạm ngoài DOM thật.
+
+Các elements sẽ được thêm vào fragment trước,
+chưa render ngay lên màn hình.
+
+Sau khi hoàn thành:
+
+```javascript
+document.body.appendChild(fragment);
+```
+
+trình duyệt chỉ cần:
+
+- render 1 lần
+- reflow 1 lần
+- repaint 1 lần
+
+nên nhanh và tối ưu hơn rất nhiều.
